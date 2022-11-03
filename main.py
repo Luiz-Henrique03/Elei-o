@@ -42,10 +42,14 @@ def Votação():
 
         janela.close()
         contador+=1
+    Serialização()
+    Mes_da_apuração.clear()
+    Sexo_Entrevistado.clear()
+    Voto.clear()
 
 def Serialização():
-    file = open("Eleições.txt",'w')
-    file.write(str(Mes_da_apuração)+"\n"+str(Voto) + "\n"+str(Sexo_Entrevistado))
+    file = open("Eleições.txt",'a')
+    file.write(str(Mes_da_apuração)+"\n"+str(Voto)+"\n"+ str(Sexo_Entrevistado)+"\n")
     file.close()
 
 
@@ -66,7 +70,18 @@ def MostraGraficoPizza():
     Mes_Visualizar = dados["Mes"]
     janela.close()
     file = open("Eleições.txt", "r")
-    while(str(Mes_Visualizar) not in file.read()):
+    verifica_test = []
+    verifica = []
+    i = 0
+    for i in range(file.__sizeof__()):
+        if (i % 2 == 0):
+            verifica_test.append(file.readline())
+        trash = file.readline()
+
+    for i in range(2):
+        verifica.append(verifica_test[i][1])
+
+    while(str(Mes_Visualizar) not in verifica):
         layout = [
             [sg.Text("Diga o Mês novamente: ")],
             [sg.Combo(values=Mes, key="Mes", size=(20, 1))],
@@ -76,10 +91,16 @@ def MostraGraficoPizza():
         evento, dados = janela.read()
         Mes_Visualizar = dados["Mes"]
         janela.close()
+
     file.close()
     file = open("Eleições.txt","r")
-    Trash = file.readline()
-    Votos = file.readline()
+
+    for i in range(10):
+        verifica = file.readline()
+        if (verifica[1] == str(Mes_Visualizar)):
+            Votos = file.readline()
+            break
+
     for i in range(len(Votos)):
         if Votos[i:i+2] == '10':
             ContagemVotoJuscelino += 1
@@ -132,9 +153,9 @@ def MostraRelaçãogeneroCandidato():
     plt.show()
 
 escolha = ''
-while escolha != '5-sair':
+while escolha != '4-sair':
 
-    opções = ['1 - Fazer votação', '2 - Serializar', '3 - Mostra resultado do mes', '4 - Relação Candidato genero','5-sair']
+    opções = ['1 - Fazer votação', '2 - Mostra resultado do mes', '3 - Relação Candidato genero','4-sair']
 
     layout = [
         [sg.Listbox(values=opções, size=(30, 6), key='esc')],
@@ -143,21 +164,19 @@ while escolha != '5-sair':
     janela = sg.Window('Menu principal', layout)
     evento, dados = janela.read()
 
-    if len(dados) > 0:
-        escolha = dados['esc'][0]
+
+    escolha = dados['esc'][0]
     janela.close()
 
 
     if escolha == '1 - Fazer votação':
           Votação()
 
-    if escolha == '2 - Serializar':
-          Serialização()
 
-    if escolha == '3 - Mostra resultado do mes':
+    if escolha == '2 - Mostra resultado do mes':
         MostraGraficoPizza()
 
-    if escolha == '4 - Relação Candiadto genero':
+    if escolha == '3 - Relação Candidato genero':
         MostraRelaçãogeneroCandidato()
 
 
